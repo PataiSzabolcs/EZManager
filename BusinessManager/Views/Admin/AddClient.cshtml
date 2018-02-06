@@ -1,0 +1,24 @@
+﻿@model List<BusinessManager.Models.User>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>EZ Manager</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <form action="/user/addclient" method="post">
+        Client Name:<br>
+        <input type="text" name="name" value="">
+        <br>
+        Client Admin:<br>
+        <select name="clientAdminId">
+            @foreach (var user in Model)
+            {
+                <option value="@user.Id">@user.Username</option>
+            }
+        </select>
+        <br><br>
+        <input type="submit" value="Add New Client">
+    </form>
+</body>
+</html>

@@ -1,0 +1,168 @@
+﻿@model BusinessManager.ViewModels.UserCasesViewModel
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>EZ Manager</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">@Model.User.Username</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor03">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/user">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/clients">Clients</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/cases">Cases</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/events">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="user/timer">Timer</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+    @if (Model.Cases.Any(c => c.CaseAdmins.Any(a => a.UserId == Model.User.Id)))
+    {
+        <h2>Administered Cases</h2>
+        <table class="table table-hover" style="width:100%">
+            <tr class="table-secondary">
+                <th>Id</th>
+                <th>Case</th>
+                <th>Client</th>
+                <th>Case Admins</th>
+                <th>Fee Earners</th>
+                <th>Worked Hours</th>
+                <th>Billable Amount</th>
+            </tr>
+            @foreach (var clientcase in Model.Cases.Where(c => c.CaseAdmins.Any(a => a.UserId == Model.User.Id)))
+            {
+                <tr>
+                    <td>@clientcase.Id</td>
+                    <td>@clientcase.Title</td>
+                    <td>@clientcase.Client.Name</td>
+                    <td>
+                        @foreach (var caseAdmin in clientcase.CaseAdmins)
+                        {
+                            <span>@caseAdmin.Admin.Username</span>
+                        }
+                    </td>
+                    <td>
+                        @if (clientcase.Billables != null)
+                        {
+                            @foreach (var feeEarners in clientcase.Billables)
+                            { 
+                                <span>@feeEarners.FeeEarner.Username</span>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @if (clientcase.Billables != null)
+                        {
+                            List<double> workedHours = new List<double>();
+                            foreach (var billable in clientcase.Billables)
+                            {
+                                workedHours.Add(billable.Hours);
+                            }
+                            double result = workedHours.Sum();
+                            <span>@result.ToString("#.##")</span>
+                        }
+                    </td>
+                    <td>
+                        @if (clientcase.Billables != null)
+                        {
+                            List<double> billableAmount = new List<double>();
+                            foreach (var billable in clientcase.Billables)
+                            {
+                                billableAmount.Add(billable.Hours * billable.HourlyRate);
+                            }
+                            double result = billableAmount.Sum();
+                            <span>@result.ToString("#.##")</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    <h2>Worked Cases</h2>
+    <table class="table table-hover" style="width:100%">
+        <tr class="table-secondary">
+            <th>Id</th>
+            <th>Case</th>
+            <th>Client</th>
+            <th>Case Admins</th>
+            <th>Worked Hours</th>
+            <th>Hourly Rate</th>
+            <th>Billable Amount</th>
+            <th>Manage Work</th>
+        </tr>
+        @foreach (var clientcase in Model.Cases.Where(c => c.Billables.Any(b => b.FeeEarner.Id == Model.User.Id)))
+        {
+            <tr>
+                <td>@clientcase.Id</td>
+                <td>@clientcase.Title</td>
+                <td>@clientcase.Client.Name</td>
+                <td>
+                    @foreach (var caseAdmin in clientcase.CaseAdmins)
+                    {
+                        <span>@caseAdmin.Admin.Username</span>
+                    }
+                </td>
+                <td>
+                    @if (clientcase.Billables != null)
+                    {
+                        <span>@clientcase.Billables.FirstOrDefault(b => b.FeeEarner.Id == Model.User.Id).Hours.ToString("#.##")</span>
+                    }
+                </td>
+                <td>
+                    @if (clientcase.Billables != null)
+                    {
+                        <span>@clientcase.Billables.FirstOrDefault(b => b.FeeEarner.Id == Model.User.Id).HourlyRate</span>
+                    }
+                </td>
+                <td>
+                    @if (clientcase.Billables != null)
+                    {
+                        double result = clientcase.Billables.FirstOrDefault(b => b.FeeEarner.Id == Model.User.Id).Hours * clientcase.Billables.FirstOrDefault(b => b.FeeEarner.Id == Model.User.Id).HourlyRate;
+                        <span>@result.ToString("#.##")</span>
+                    }
+                </td>
+                <td>
+                    @if (clientcase.Entries != null && clientcase.Entries.Where(e => e.FeeEarner.Id == Model.User.Id).Any(e => e.Ongoing))
+                    {
+                        <form action="/user/timerstop" method="post">
+                            <input type="hidden" name="caseId" value="@clientcase.Id">
+                            <input type="hidden" name="userId" value="@Model.User.Id">
+                            <input type="submit" class="btn btn-outline-danger btn-sm" value="Stop Timer">
+                            <input type="text" class="form-control form-control-sm" name="narrative" value="@clientcase.Entries.FirstOrDefault(b => b.FeeEarner.Id == Model.User.Id && b.Ongoing).Narrative">
+                        </form>
+                    }
+                    else
+                    {
+                        <form action="/user/timerstart" method="post">
+                            <input type="hidden" name="caseId" value="@clientcase.Id">
+                            <input type="hidden" name="userId" value="@Model.User.Id">
+                            <input type="submit" class="btn btn-outline-success btn-sm" value="Start Timer">
+                            <input type="text" class="form-control form-control-sm" name="narrative" placeholder="Add narrative" value="">
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</body>
+</html>

@@ -1,0 +1,28 @@
+﻿@model List<BusinessManager.Models.Case>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>EZ Manager</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <form action="/user/adddocument" method="post">
+        Case:<br>
+        <select name="caseId">
+            @foreach (var clientcase in Model)
+            {
+                <option value="@clientcase.Id">@clientcase.Title</option>
+            }
+        </select>
+        <br>
+        Document Title:<br>
+        <input type="text" name="title" value="">
+        <br>
+        Path:<br>
+        <input type="text" name="path" value="">
+        <br>
+        <br><br>
+        <input type="submit" class="btn btn-outline-secondary" value="Add New Document">
+    </form>
+</body>
+</html>

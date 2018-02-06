@@ -1,0 +1,33 @@
+﻿@model BusinessManager.ViewModels.CaseUserViewModel
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>EZ Manager</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <form action="/user/addfeeearner" method="post">
+        Case:<br>
+        <select name="caseId">
+            @foreach (var clientcase in Model.Cases)
+            {
+                <option value="@clientcase.Id">@clientcase.Title</option>
+            }
+        </select>
+        <br>
+        Fee Earner:<br>
+        <select name="feeEarnerId">
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Id">@user.Username</option>
+            }
+        </select>
+        <br>
+        Hourly Rate:<br>
+        <input type="number" name="rate" value="">
+        <br>
+        <br><br>
+        <input type="submit" value="Add New Fee Earner to the Case">
+    </form>
+</body>
+</html>

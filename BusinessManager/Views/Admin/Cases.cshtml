@@ -1,0 +1,83 @@
+﻿@model List<BusinessManager.Models.Case>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>EZ Manager</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">!Username!</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor03">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/user">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/clients">Clients</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/cases">Cases</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/events">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="user/timer">Timer</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+    <table class="table table-hover" style="width:100%">
+        <tr class="table-secondary">
+            <th>Id</th>
+            <th>Case</th>
+            <th>Client</th>
+            <th>Case Admins</th>
+            <th>Worked Hours</th>
+            <th>Hourly Rate</th>
+            <th>Billable Amount</th>
+        </tr>
+        @foreach (var clientcase in Model)
+        {
+            <tr>
+                <td>@clientcase.Id</td>
+                <td>@clientcase.Title</td>
+                <td>@clientcase.Client.Name</td>
+                <td>
+                    @foreach (var caseAdmin in clientcase.CaseAdmins)
+                    {
+                        <span>@caseAdmin.Admin.Username</span>
+                    }
+                </td>
+                <td>
+                    @if (clientcase.Billables != null)
+                    {
+                        <span>@clientcase.Billables.FirstOrDefault(b => b.FeeEarner.Username.Equals("Associate1")).HourlyRate</span>
+                    }
+                </td>
+                <td>
+                    @if (clientcase.Billables != null)
+                    {
+                        <span>@clientcase.Billables.FirstOrDefault(b => b.FeeEarner.Username.Equals("Associate1")).Hours</span>
+                    }
+                </td>
+                <td>
+                    @if (clientcase.Billables != null)
+                    {
+                        <span>@(clientcase.Billables.FirstOrDefault(b => b.FeeEarner.Username.Equals("Associate1")).HourlyRate * clientcase.Billables.FirstOrDefault(b => b.FeeEarner.Username.Equals("Associate1")).Hours)</span>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</body>
+</html>

@@ -1,0 +1,35 @@
+﻿@model BusinessManager.ViewModels.UserClientViewModel
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>EZ Manager</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <form action="/user/addcase" method="post">
+        Client Name:<br>
+        <select name="clientId">
+            @foreach (var client in Model.Clients)
+            {
+                <option value="@client.Id">@client.Name</option>
+            }
+        </select>
+        <br>
+        Case Title:<br>
+        <input type="text" name="title" value="">
+        <br>
+        Case Admin:<br>
+        <select name="caseAdminId">
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.Id">@user.Username</option>
+            }
+        </select>
+        <br><br>
+        <button type="button" class="btn btn-outline-secondary">Secondary</button>
+        <input type="submit" class="btn btn-outline-secondary" value="Add New Case">
+    </form>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
